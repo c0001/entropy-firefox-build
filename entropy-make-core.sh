@@ -236,17 +236,18 @@ fi
 mkdir -p "${mk_edist_dir}/${mk_mozbuild_state_path_base}"
 (
     set -e
-    [[ $MK_TESTP -eq 1 ]] && exit 0
-    cd "$mk_distdir"
-    for i in firefox-*.bz2 ; do
-        mv "$i" "${mk_edist_dir}/${i/"$mk_ver"/"$mk_eflver"}"
-    done
-    for i in firefox-*.zip ; do
-        mv "$i" "${mk_edist_dir}/${i/"$mk_ver"/"$mk_eflver"}"
-    done
-    for i in firefox-*.txt ; do
-        mv "$i" "${mk_edist_dir}/${i/"$mk_ver"/"$mk_eflver"}"
-    done
+    if [[ $MK_TESTP -eq 0 ]]; then
+        cd "$mk_distdir"
+        for i in firefox-*.bz2 ; do
+            mv "$i" "${mk_edist_dir}/${i/"$mk_ver"/"$mk_eflver"}"
+        done
+        for i in firefox-*.zip ; do
+            mv "$i" "${mk_edist_dir}/${i/"$mk_ver"/"$mk_eflver"}"
+        done
+        for i in firefox-*.txt ; do
+            mv "$i" "${mk_edist_dir}/${i/"$mk_ver"/"$mk_eflver"}"
+        done
+    fi
 
     # archive source
     cp -a "$MK_FFTARBALL_FILE" "${mk_edist_dir}/${MK_FFTARBALL_BASENAME}"
@@ -314,6 +315,9 @@ To check this distribution validation, please check the
 EOF
 
 echo "Generate sha256sum hash log for distributions ..."
+if [[ $MK_TESTP -eq 1 ]] ; then
+    rm -f sha256sum.log*
+fi
 mk_dist_shahash="$(find . -type f -print0 | xargs --null sha256sum -b)"
 echo "$mk_dist_shahash" > ./sha256sum.log
 if [[ -n $mk_gpgverifyID ]] && \
