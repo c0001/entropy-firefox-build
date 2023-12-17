@@ -1,0 +1,2 @@
+Self-maintained build scripts for made tiny prefs and performance
+optimization against mozilla official autobuild firefox release.
