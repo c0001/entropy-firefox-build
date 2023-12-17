@@ -235,6 +235,7 @@ fi
 
 mkdir -p "${mk_edist_dir}/${mk_mozbuild_state_path_base}"
 (
+    set -e
     [[ $MK_TESTP -eq 1 ]] && exit 0
     cd "$mk_distdir"
     for i in firefox-*.bz2 ; do
@@ -246,6 +247,17 @@ mkdir -p "${mk_edist_dir}/${mk_mozbuild_state_path_base}"
     for i in firefox-*.txt ; do
         mv "$i" "${mk_edist_dir}/${i/"$mk_ver"/"$mk_eflver"}"
     done
+
+    # archive source
+    cp -a "$MK_FFTARBALL_FILE" "${mk_edist_dir}/${MK_FFTARBALL_BASENAME}"
+
+    # we should either populate cargo caches since moz build relying
+    # on various rust deps hosted in github.com which are not included
+    # in source tarball.
+    if [[ $MK_VIA_DOCKER = 'true' ]] && [[ -d ${HOME}/.cargo ]]; then
+        cd "${HOME}"
+        tar -jcf "${mk_edist_dir}/CARGO_HOME.tar.bz2" .cargo
+    fi
 )
 
 if [[ -d "${MOZBUILD_STATE_PATH}"/toolchains ]] ; then
@@ -276,12 +288,29 @@ rm -fv \"${MK_FFSRCDIR}/\${displaypath}/__submodule__.tar\""
 fi
 
 cd "${mk_edist_dir}"
-cat <<EOF > README.txt
+cat <<EOF > README.org
+#+title: Firefox ${mk_eflver} release note:
+#+date: $(printf '%(%Y%m%d%H%M%S)T\n')
+#+author: Entropy
 
-To recompile source, mv the '.mozbuild' to decompressed source archive
-root path for reusing the SCCACHE which used for this distribution for
-preventing re-downloading artifacts and keep compile env consist.a
+This release of firefox-${MK_FFVER} is my self built with mozconf of:
 
+#+begin_example
+$(cat "${MK_FFSRCDIR}/mozconfig")
+#+end_example
+
+Which are for the sake of doing most compiler optimization and privacy
+prefs specification.
+$( if [[ $MK_VIA_DOCKER = 'true' ]] ; then
+      echo ;
+      echo "\
+To recompile the source, may used preserved rust CARGO_HOME tarball in
+'${MK_FFTARBALL_BASENAME}' at that time. Which simply extracted it and
+migrate the '.cargo' directory to \$HOME root or copy its contents to
+anywhere your current \$CARGO_HOME specified in."; echo ' ';
+   fi; )
+To check this distribution validation, please check the
+'sha256sum.log'.
 EOF
 
 echo "Generate sha256sum hash log for distributions ..."
