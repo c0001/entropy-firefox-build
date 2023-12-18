@@ -22,7 +22,7 @@ MK_FFSRCDIR="${MK_SRCDIR}/firefox-${MK_FFVER}"
 MK_FFTARBALL_BASENAME="firefox-${MK_FFVER}.source.tar.xz"
 MK_FFTARBALL_FILE="${MK_SRCDIR}/${MK_FFTARBALL_BASENAME}"
 MK_FFTARBALL_FILE_SHAHASH='89626520f2f0f782f37c074b94690e0f08dcf416be2b992f4aad68df5d727b21'
-MK_FFTARBALL_E_BASENAME="entropy-patched-firefox-${MK_FFVER}.source.tar.bz2"
+MK_FFTARBALL_E_BASENAME="entropy-patched-firefox-${MK_FFVER}.source.tar.xz"
 MK_FFTARBALL_E_FILE="${MK_SRCDIR}/${MK_FFTARBALL_E_BASENAME}"
 MK_FFSRCURI="https://archive.mozilla.org/pub/firefox/\
 releases/${MK_FFVER}/source/${MK_FFTARBALL_BASENAME}"
@@ -72,7 +72,7 @@ echo "Generate patched source tarball ..."
   j="${i##*/}"
   i="${i%/*}"
   cd "${i}/"
-  tar -jcf "${MK_FFTARBALL_E_FILE}" "$j"
+  tar -Jcf "${MK_FFTARBALL_E_FILE}" "$j"
 )
 
 set -x
