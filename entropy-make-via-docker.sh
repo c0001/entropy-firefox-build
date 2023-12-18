@@ -133,4 +133,5 @@ echo 'Downloading rust lang ...' ;            \
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y ; \
 . ~/.cargo/env ;                              \
 export MK_VIA_DOCKER=true ;                   \
+export MK_OPT_NO_OPTIMIZATION='${MK_OPT_NO_OPTIMIZATION}' ; \
 bash entropy-make-core.sh ;\""

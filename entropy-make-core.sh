@@ -144,13 +144,15 @@ mk_func_add_mozconf "ac_add_options --with-mozilla-api-keyfile=${MK_BASHSRCDIR@Q
 mk_func_add_mozconf "ac_add_options --disable-crashreporter"
 mk_func_add_mozconf "ac_add_options --disable-tests"
 mk_func_add_mozconf 'ac_add_options --disable-updater'
-mk_func_add_mozconf 'ac_add_options MOZ_PGO=1'
-mk_func_add_mozconf "ac_add_options --enable-lto"
-mk_func_add_mozconf "ac_add_options --enable-hardening"
-mk_func_add_mozconf "ac_add_options --enable-optimize"
-# this may cause build failed due to: https://github.com/rust-lang/rust/issues/116137
-#mk_func_add_mozconf "ac_add_options --enable-rust-simd"
-mk_func_add_mozconf "export RUSTC_OPT_LEVEL=2"
+if [[ $MK_OPT_NO_OPTIMIZATION != '1' ]] ; then
+    mk_func_add_mozconf 'ac_add_options MOZ_PGO=1'
+    mk_func_add_mozconf "ac_add_options --enable-lto"
+    mk_func_add_mozconf "ac_add_options --enable-hardening"
+    mk_func_add_mozconf "ac_add_options --enable-optimize"
+    # this may cause build failed due to: https://github.com/rust-lang/rust/issues/116137
+    #mk_func_add_mozconf "ac_add_options --enable-rust-simd"
+    mk_func_add_mozconf "export RUSTC_OPT_LEVEL=2"
+fi
 mk_func_add_mozconf "export MOZ_INCLUDE_SOURCE_INFO=1"
 mk_func_add_mozconf "MOZ_REQUIRE_SIGNING="
 mk_func_add_mozconf "MOZ_DATA_REPORTING="
