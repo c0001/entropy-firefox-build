@@ -22,6 +22,8 @@ MK_FFSRCDIR="${MK_SRCDIR}/firefox-${MK_FFVER}"
 MK_FFTARBALL_BASENAME="firefox-${MK_FFVER}.source.tar.xz"
 MK_FFTARBALL_FILE="${MK_SRCDIR}/${MK_FFTARBALL_BASENAME}"
 MK_FFTARBALL_FILE_SHAHASH='89626520f2f0f782f37c074b94690e0f08dcf416be2b992f4aad68df5d727b21'
+MK_FFTARBALL_E_BASENAME="entropy-patched-firefox-${MK_FFVER}.source.tar.bz2"
+MK_FFTARBALL_E_FILE="${MK_SRCDIR}/${MK_FFTARBALL_E_BASENAME}"
 MK_FFSRCURI="https://archive.mozilla.org/pub/firefox/\
 releases/${MK_FFVER}/source/${MK_FFTARBALL_BASENAME}"
 
@@ -55,11 +57,23 @@ while IFS= read i ; do
             k="${k%.espec}"
             set -ex
             cd "${MK_FFSRCDIR}/${j}/"
-            diff "$k" "${MK_PATCHDIR}/${j}/${k}" >/dev/null
+            if [[ $MK_TESTP -eq 0 ]] ; then
+                diff "$k" "${MK_PATCHDIR}/${j}/${k}" >/dev/null
+            fi
             rm "$k" && cp -a "${MK_PATCHDIR}/${i}" "$k"
         )
     fi
 done < <(set -e; cd "${MK_PATCHDIR}"; find -type f)
+
+if [[ -e $MK_FFTARBALL_E_FILE ]] ; then rm -f "$MK_FFTARBALL_E_FILE" ; fi
+echo "Generate patched source tarball ..."
+( set -e
+  i="${MK_FFSRCDIR%/}"
+  j="${i##*/}"
+  i="${i%/*}"
+  cd "${i}/"
+  tar -jcf "${MK_FFTARBALL_E_FILE}" "$j"
+)
 
 set -x
 
@@ -275,12 +289,14 @@ mkdir -p "${mk_edist_dir}/${mk_mozbuild_state_path_base}"
     fi
 
     # archive source
-    cp -a "$MK_FFTARBALL_FILE" "${mk_edist_dir}/${MK_FFTARBALL_BASENAME}"
+    [[ ! -e ${mk_edist_dir}/${MK_FFTARBALL_E_BASENAME} ]]
+    mv -v "$MK_FFTARBALL_E_FILE" "${mk_edist_dir}/"
 
     # we should either populate cargo caches since moz build relying
     # on various rust deps hosted in github.com which are not included
     # in source tarball.
     if [[ $MK_VIA_DOCKER = 'true' ]] && [[ -d ${HOME}/.cargo ]]; then
+        [[ ! -e ${mk_edist_dir}/CARGO_HOME.tar.bz2 ]]
         cd "${HOME}"
         tar -jcf "${mk_edist_dir}/CARGO_HOME.tar.bz2" .cargo
     fi
@@ -353,3 +369,9 @@ then
         -u "$mk_gpgverifyID"    \
         -o "sha256sum.log.asc" "sha256sum.log"
 fi
+
+# finally dist tarball generation
+MK_DISTTARBALL="${MK_BASHSRCDIR}/dist/entropy-firefox-${mk_eflver}.tar.bz2"
+if [[ -e $MK_DISTTARBALL ]] ; then rm -f "$MK_DISTTARBALL" ; fi
+tar -jcf "${MK_DISTTARBALL}" \
+    -C "${MK_FFSRCDIR}/" entropy-dist
