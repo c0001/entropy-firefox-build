@@ -83,7 +83,7 @@ MK_DEBIAN_DEPS=(
     fonts-dejima-mincho
     iso-codes
     # entropy spec deps
-    util-linux coreutils passwd curl procps mercurial
+    util-linux coreutils passwd curl procps mercurial lsb-release
 )
 
 # we should add a fake host entry to prevent pacman replace

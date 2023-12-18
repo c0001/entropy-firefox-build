@@ -47,6 +47,20 @@ if [[ ! -d $MK_FFSRCDIR ]]; then
     tar -Jxf "$MK_FFTARBALL_FILE" -C "$MK_SRCDIR"
 fi
 
+MK_PATCHDIR="${MK_BASHSRCDIR}/entropy-spec/patches"
+while IFS= read i ; do
+    j="${i%/*}" ; k="${i##*/}"
+    if [[ $k =~ \.espec$ ]] ; then
+        (
+            k="${k%.espec}"
+            set -ex
+            cd "${MK_FFSRCDIR}/${j}/"
+            diff "$k" "${MK_PATCHDIR}/${j}/${k}" >/dev/null
+            rm "$k" && cp -a "${MK_PATCHDIR}/${i}" "$k"
+        )
+    fi
+done < <(set -e; cd "${MK_PATCHDIR}"; find -type f)
+
 set -x
 
 export MOZ_BUILD_DATE="$(printf "%(%Y%m%d%H%M%S)T\n")"
@@ -141,6 +155,9 @@ mk_func_add_mozconf "export MOZ_INCLUDE_SOURCE_INFO=1"
 mk_func_add_mozconf "MOZ_REQUIRE_SIGNING="
 mk_func_add_mozconf "MOZ_DATA_REPORTING="
 mk_func_add_mozconf "MOZ_TELEMETRY_REPORTING="
+if [[ $(lsb_release -si) = 'Arch' ]] ; then
+    mk_func_add_mozconf 'ac_add_options --with-wasi-sysroot=/usr/share/wasi-sysroot'
+fi
 
 test -f "${MK_FFSRCDIR}/browser/app/profile/firefox.js"
 
