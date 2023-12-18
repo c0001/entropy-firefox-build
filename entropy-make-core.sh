@@ -17,6 +17,10 @@ else
     MK_TESTP=0
 fi
 
+# Multi threads 'xz' enc/dec task for fasting the procedure See:
+# https://stackoverflow.com/a/33441796
+export XZ_DEFAULTS="-T 0"
+
 MK_FFVER=118.0.2
 MK_FFSRCDIR="${MK_SRCDIR}/firefox-${MK_FFVER}"
 MK_FFTARBALL_BASENAME="firefox-${MK_FFVER}.source.tar.xz"
