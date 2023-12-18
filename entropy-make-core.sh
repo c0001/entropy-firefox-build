@@ -153,7 +153,11 @@ if [[ $MK_OPT_NO_OPTIMIZATION != '1' ]] ; then
     #mk_func_add_mozconf "ac_add_options --enable-rust-simd"
     mk_func_add_mozconf "export RUSTC_OPT_LEVEL=2"
 else
-    mk_func_add_mozconf 'ac_add_options --disable-optimize'
+    :
+    # FIXME: Do not explicitly use '--disable-optimize' option or may
+    # cause build linkage failure.
+    #
+    #mk_func_add_mozconf 'ac_add_options --disable-optimize'
 fi
 mk_func_add_mozconf "export MOZ_INCLUDE_SOURCE_INFO=1"
 mk_func_add_mozconf "MOZ_REQUIRE_SIGNING="
