@@ -103,7 +103,7 @@ if [[ -e ${MK_FFSRCDIR}/.git ]] ; then
     fi
     git -C "$MK_FFSRCDIR" submodule deinit --force --all
     git -C "$MK_FFSRCDIR" submodule update --init --recursive
-    mk_gitrev="$(git -C "$MK_FFSRCDIR" describe --tags)"
+    mk_gitrev="$(git -C "$MK_FFSRCDIR" describe --tags || echo '')"
     if [[ $mk_gitrev =~ ^(entropy-)?v[0-9]+\. ]] && \
            [[ ! $mk_gitrev =~ '-'[0-9]+-g.+$ ]]
     then
@@ -300,13 +300,19 @@ mkdir -p "${mk_edist_dir}/"
 (
     set -ex
     [[ ! -e "${mk_edist_dir}/${mk_mozbuild_state_path_base%/}.tar.xz" ]]
-    if [[ -d "${MOZBUILD_STATE_PATH}"/toolchains ]] ; then
-        i="${MOZBUILD_STATE_PATH%/}";
-        j="${i%/*}"
-        i="${i##*/}"
+    i="${MOZBUILD_STATE_PATH%/}";
+    j="${i%/*}"
+    i="${i##*/}"
+    declare -a arr=()
+    for k in toolchains indices ; do
+        if [[ -d ${MOZBUILD_STATE_PATH}/$k ]] ; then
+            arr+=("${i}/${k}")
+        fi
+    done
+    if [[ -n "${arr[*]}" ]] ; then
         tar -Jcf \
             "${mk_edist_dir}/${mk_mozbuild_state_path_base%/}.tar.xz" \
-            -C "$j" "${i}/toolchains"
+            -C "$j" "${arr[@]}"
     fi
 )
 
