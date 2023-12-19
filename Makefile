@@ -1,4 +1,4 @@
-.PHONY: clean build build-without-optimization
+.PHONY: clean build build-without-optimization test
 
 clean:
 	@bash -c "set -e; if [ -d .git ]                                                ; \
@@ -8,7 +8,10 @@ clean:
 		fi"
 
 build: clean
-	env MK_OPT_NO_OPTIMIZATION=  bash entropy-make-via-docker.sh
+	env MK_TESTP= MK_OPT_NO_OPTIMIZATION=  bash entropy-make-via-docker.sh
 
 build-without-optimization: clean
-	env MK_OPT_NO_OPTIMIZATION=1 bash entropy-make-via-docker.sh
+	env MK_TESTP= MK_OPT_NO_OPTIMIZATION=1 bash entropy-make-via-docker.sh
+
+test:
+	env MK_TESTP=test bash entropy-make-via-docker.sh
