@@ -373,10 +373,11 @@ prefs specification.
 $( if [[ $MK_VIA_DOCKER = 'true' ]] ; then
       echo ;
       echo "\
-To recompile the source, may used preserved rust CARGO_HOME tarball in
-'${MK_FFTARBALL_BASENAME}' at that time. Which simply extracted it and
-migrate the '.cargo' directory to \$HOME root or copy its contents to
-anywhere your current \$CARGO_HOME specified in."; echo ' ';
+To recompile the source, may used preserved rust toolchain cache
+(RUST_TOOLCHAIN_CACHE.tar.xz) for '${MK_FFTARBALL_BASENAME}' at built
+time. Which simply extracted it and migrate the '.cargo' directory to
+\$HOME root or copy its contents to anywhere your current \$CARGO_HOME
+specified in, thus same for '.rustup' for \$RUSTUP_HOME."; echo ' ';
    fi; )
 To check this distribution validation, please check the
 'sha256sum.log'.
