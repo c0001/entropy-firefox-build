@@ -276,7 +276,7 @@ if ps -p "$mk_xvfb_procid" &>/dev/null ; then
     kill "$mk_xvfb_procid"
 fi
 
-mkdir -p "${mk_edist_dir}/${mk_mozbuild_state_path_base}"
+mkdir -p "${mk_edist_dir}/"
 (
     set -e
     if [[ $MK_TESTP -eq 0 ]]; then
@@ -295,21 +295,20 @@ mkdir -p "${mk_edist_dir}/${mk_mozbuild_state_path_base}"
     # archive source
     [[ ! -e ${mk_edist_dir}/${MK_FFTARBALL_E_BASENAME} ]]
     mv -v "$MK_FFTARBALL_E_FILE" "${mk_edist_dir}/"
-
-    # we should either populate cargo caches since moz build relying
-    # on various rust deps hosted in github.com which are not included
-    # in source tarball.
-    if [[ $MK_VIA_DOCKER = 'true' ]] && [[ -d ${HOME}/.cargo ]]; then
-        [[ ! -e ${mk_edist_dir}/CARGO_HOME.tar.bz2 ]]
-        cd "${HOME}"
-        tar -jcf "${mk_edist_dir}/CARGO_HOME.tar.bz2" .cargo
-    fi
 )
 
-if [[ -d "${MOZBUILD_STATE_PATH}"/toolchains ]] ; then
-    mv "${MOZBUILD_STATE_PATH}"/toolchains \
-       "${mk_edist_dir}/${mk_mozbuild_state_path_base%/}/"
-fi
+(
+    set -ex
+    [[ ! -e "${mk_edist_dir}/${mk_mozbuild_state_path_base%/}.tar.xz" ]]
+    if [[ -d "${MOZBUILD_STATE_PATH}"/toolchains ]] ; then
+        i="${MOZBUILD_STATE_PATH%/}";
+        j="${i%/*}"
+        i="${i##*/}"
+        tar -Jcf \
+            "${mk_edist_dir}/${mk_mozbuild_state_path_base%/}.tar.xz" \
+            -C "$j" "${i}/toolchains"
+    fi
+)
 
 if [[ -e ${MK_FFSRCDIR}/.git ]] ; then
     echo "Archiving source tree ..."
@@ -330,8 +329,26 @@ tar --concatenate --force-local                            \
 rm -fv \"${MK_FFSRCDIR}/\${displaypath}/__submodule__.tar\""
     cd "${mk_edist_dir}"
     echo "Gzip srouce archive ..."
-    gzip -9 "firefox-${mk_eflver}.src.tar"
+    xz "firefox-${mk_eflver}.src.tar"
 fi
+
+(
+    set -ex
+    # we should either populate cargo caches since moz build relying
+    # on various rust deps hosted in github.com which are not included
+    # in source tarball.
+    declare -a rust_hs=()
+    for i in '.cargo' '.rustup' ; do
+        if [[ -d ${HOME}/${i} ]] ; then
+            rust_hs+=( "${i}")
+        fi
+    done
+    if [[ $MK_VIA_DOCKER = 'true' ]] && [[ -n "${rust_hs[*]}" ]]; then
+        [[ ! -e ${mk_edist_dir}/RUST_TOOLCHAIN_CACHE.tar.xz ]]
+        cd "${HOME}"
+        tar -Jcf "${mk_edist_dir}/RUST_TOOLCHAIN_CACHE.tar.xz" "${rust_hs[@]}"
+    fi
+)
 
 cd "${mk_edist_dir}"
 cat <<EOF > README.org
@@ -375,7 +392,7 @@ then
 fi
 
 # finally dist tarball generation
-MK_DISTTARBALL="${MK_BASHSRCDIR}/dist/entropy-firefox-${mk_eflver}.tar.bz2"
+MK_DISTTARBALL="${MK_BASHSRCDIR}/dist/entropy-firefox-${mk_eflver}.tar.xz"
 if [[ -e $MK_DISTTARBALL ]] ; then rm -f "$MK_DISTTARBALL" ; fi
-tar -jcf "${MK_DISTTARBALL}" \
+tar -Jcf "${MK_DISTTARBALL}" \
     -C "${MK_FFSRCDIR}/" entropy-dist
