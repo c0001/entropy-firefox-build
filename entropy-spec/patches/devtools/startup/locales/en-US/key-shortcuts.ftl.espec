@@ -3,36 +3,61 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # Key pressed to open a toolbox with the default panel selected
-devtools-commandkey-toggle-toolbox =
+devtools-commandkey-toggle-toolbox = VK_F12
 # Alternative key pressed to open a toolbox with the default panel selected
 devtools-commandkey-toggle-toolbox-f12 = VK_F12
 # Key pressed to open the Browser Toolbox, used for debugging Firefox itself
-devtools-commandkey-browser-toolbox =
-# Key pressed to open the Browser Console, used for debugging Firefox itself
-devtools-commandkey-browser-console =
-# Key pressed to toggle on the Responsive Design Mode
-devtools-commandkey-responsive-design-mode =
+# prefix: ctrl+alt+shift
+devtools-commandkey-browser-toolbox = VK_F12
+
+# prefix -- crtl+shift group ====================
 # Key pressed to open a toolbox with the inspector panel selected
-devtools-commandkey-inspector =
+# prefix: ctrl+shift
+devtools-commandkey-inspector = VK_F1
+
 # Key pressed to open a toolbox with the web console panel selected
-devtools-commandkey-webconsole =
+# prefix: ctrl+shift
+devtools-commandkey-webconsole = VK_F2
+
 # Key pressed to open a toolbox with the debugger panel selected
-devtools-commandkey-jsdebugger =
+# prefix: ctrl+shift
+devtools-commandkey-jsdebugger = VK_F3
+
 # Key pressed to open a toolbox with the network monitor panel selected
-devtools-commandkey-netmonitor = VK_F1
+# prefix: ctrl+shift
+devtools-commandkey-netmonitor = VK_F4
+
 # Key pressed to open a toolbox with the style editor panel selected
-devtools-commandkey-styleeditor =
+# prefix: shift
+devtools-commandkey-styleeditor = VK_F5
+
 # Key pressed to open a toolbox with the performance panel selected
-devtools-commandkey-performance =
+# prefix: shift
+devtools-commandkey-performance = VK_F6
+
+# Key pressed to toggle on the Responsive Design Mode
+# prefix: ctrl+shift
+devtools-commandkey-responsive-design-mode = VK_F7
+
+# Key pressed to open the Browser Console, used for debugging Firefox itself
+# prefix: ctrl+shift
+devtools-commandkey-browser-console = VK_F8
+
+# prefix -- shift group ====================
 # Key pressed to open a toolbox with the storage panel selected
-devtools-commandkey-storage =
+# prefix: shift
+devtools-commandkey-storage = VK_F1
 # Key pressed to open a toolbox with the DOM panel selected
-devtools-commandkey-dom =
+# prefix: shift
+devtools-commandkey-dom = VK_F2
 # Key pressed to open a toolbox with the accessibility panel selected
-devtools-commandkey-accessibility-f12 = VK_F12
+# prefix: shift
+devtools-commandkey-accessibility-f12 = VK_F3
+
+# prefix -- misc group ====================
 # Key pressed to start or stop the performance profiler
-devtools-commandkey-profiler-start-stop =
+devtools-commandkey-profiler-start-stop = VK_1
 # Key pressed to capture a recorded performance profile
-devtools-commandkey-profiler-capture =
+devtools-commandkey-profiler-capture = VK_2
 # Key pressed to toggle the JavaScript tracing
-devtools-commandkey-javascript-tracing-toggle =
+devtools-commandkey-javascript-tracing-toggle = VK_5
